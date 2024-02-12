@@ -1,0 +1,35 @@
+alias dc='docker-compose'
+alias ll='ls -alF'
+
+alias updg='sudo apt-get update && sudo apt-get dist-upgrade -y && sudo apt-get autoremove -y && sudo apt-get autoclean -y && sudo apt-get clean'
+alias kubectl='microk8s kubectl'
+alias git-merge-develop-into-master='git md && git mm && git merge --no-ff develop'
+alias git-delete-merged-branches='git branch --merged master | egrep -v "(^\*|master|main|dev)" | xargs git branch -d'
+
+function docker-console() {
+  POD_NAME_PATTERN="$1"
+  POD_USERNAME="$2"
+  if [[ -z "${POD_USERNAME}" ]]
+  then
+    POD_USERNAME="www-data"
+  fi
+
+  echo "Log in as ${POD_USERNAME}:"
+
+  kubectl exec -n kali-rrr -it $(kubectl get pods -A | grep "${POD_NAME_PATTERN}" | awk '{print $2;}') -- su-exec "${POD_USERNAME}" sh
+}
+
+function rector-modified-file() {
+  POD_NAME_PATTERN="$1"
+  POD_USERNAME="$2"
+  BRANCH="$3"
+  if [[ -z "${POD_USERNAME}" ]]
+  then
+    POD_USERNAME="www-data"
+  fi
+
+    git diff ${BRANCH} --name-only --diff-filter=ACMR | grep "php$" | xargs kubectl exec -n kali-rrr -t $(kubectl get pods -A | grep "${POD_NAME_PATTERN}" | awk '{print $2;}') -- su-exec "${POD_USERNAME}" php bin/rector process
+}
+
+alias docker-console-sample-app='docker-console "pod-name" "user"'
+alias rector-sample='rector-modified-file "pod-name" "user" "branch-to-compare"'
