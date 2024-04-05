@@ -31,5 +31,17 @@ function rector-modified-file() {
     git diff ${BRANCH} --name-only --diff-filter=ACMR | grep "php$" | xargs kubectl exec -n kali-rrr -t $(kubectl get pods -A | grep "${POD_NAME_PATTERN}" | awk '{print $2;}') -- su-exec "${POD_USERNAME}" php bin/rector process
 }
 
+function phpstan-modified-file() {
+  POD_NAME_PATTERN="$1"
+  POD_USERNAME="$2"
+  BRANCH="$3"
+  if [[ -z "${POD_USERNAME}" ]]
+  then
+    POD_USERNAME="www-data"
+  fi
+
+    git diff ${BRANCH} --name-only --diff-filter=ACMR | grep "php$" | xargs kubectl exec -n kali-rrr -t $(kubectl get pods -A | grep "${POD_NAME_PATTERN}" | awk '{print $2;}') -- su-exec "${POD_USERNAME}" php bin/phpstan analyse -c ph>
+}
+
 alias docker-console-sample-app='docker-console "pod-name" "user"'
 alias rector-sample='rector-modified-file "pod-name" "user" "branch-to-compare"'
