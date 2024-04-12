@@ -1,0 +1,14 @@
+#!/bin/bash
+REFERENCE_BRANCH="$1"
+if [[ -z "${REFERENCE_BRANCH}" ]]; then
+  REFERENCE_BRANCH="master"
+fi
+git checkout ${REFERENCE_BRANCH}
+BRANCHES="$(git branch | sed 's/\*/ /g' | tr "\n" " ")"
+for BRANCH in ${BRANCHES}; do
+  if [[ "${BRANCH}" != "master" ]]; then
+    echo "branch: ${BRANCH}"
+    git checkout ${BRANCH} && git rebase ${REFERENCE_BRANCH}
+  fi
+done
+git checkout ${REFERENCE_BRANCH}
