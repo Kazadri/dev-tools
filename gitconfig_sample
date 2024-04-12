@@ -1,0 +1,17 @@
+[user]
+	email = CHANGEME
+	name = CHANGEME
+[core]
+	editor = nano
+	excludesfile = /home/CHANGEME/.gitignore_global
+[alias]
+	st = status
+	co = checkout
+	sw = switch
+	br = branch
+	mm = !git checkout master && git fetch -p && git pull --rebase
+	wip = !git commit -am 'wip'
+[rerere]
+	enabled = true
+[push]
+	#default = current
